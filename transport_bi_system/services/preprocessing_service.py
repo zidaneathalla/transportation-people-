@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import pandas as pd
 
 from config.settings import settings
@@ -39,35 +41,47 @@ class PreprocessingService:
         return clean_df.reset_index(drop=True)
 
     def clean_with_spark(self, df: pd.DataFrame) -> pd.DataFrame:
+        spark = None
         try:
             from pyspark.sql import SparkSession
             from pyspark.sql.functions import col, to_timestamp
+
+            os.environ.setdefault("SPARK_LOCAL_IP", "127.0.0.1")
+            os.environ.setdefault("SPARK_LOCAL_HOSTNAME", "localhost")
+
+            spark = (
+                SparkSession.builder.appName("TransportBIPreprocessing")
+                .master("local[*]")
+                .config("spark.driver.host", "127.0.0.1")
+                .config("spark.driver.bindAddress", "127.0.0.1")
+                .config("spark.local.hostname", "localhost")
+                .config("spark.ui.showConsoleProgress", "false")
+                .getOrCreate()
+            )
+
+            spark_df = spark.createDataFrame(df.astype(str))
+            spark_df = spark_df.dropDuplicates()
+            spark_df = spark_df.withColumn(
+                "operating_day", to_timestamp(col("operating_day"))
+            )
+            spark_df = spark_df.withColumn("arrival", to_timestamp(col("arrival")))
+            spark_df = spark_df.withColumn("departure", to_timestamp(col("departure")))
+            spark_df = spark_df.withColumn("vehicle_seats", col("vehicle_seats").cast("double"))
+            spark_df = spark_df.withColumn("passengers", col("passengers").cast("double"))
+            spark_df = spark_df.fillna(
+                {"vehicle_seats": settings.default_vehicle_capacity, "passengers": 0}
+            )
+            spark_df = spark_df.filter(col("vehicle_seats") > 0).filter(col("passengers") >= 0)
+
+            result = spark_df.toPandas()
+            logger.info("Spark preprocessing completed. rows=%s", len(result))
+            return result.reset_index(drop=True)
         except Exception as exc:
-            logger.warning("PySpark unavailable, fallback to pandas. error=%s", exc)
+            logger.warning("Spark preprocessing failed, fallback to pandas. error=%s", exc)
             return self.clean_with_pandas(df)
-
-        spark = (
-            SparkSession.builder.appName("TransportBIPreprocessing")
-            .master("local[*]")
-            .config("spark.ui.showConsoleProgress", "false")
-            .getOrCreate()
-        )
-
-        spark_df = spark.createDataFrame(df.astype(str))
-        spark_df = spark_df.dropDuplicates()
-        spark_df = spark_df.withColumn(
-            "operating_day", to_timestamp(col("operating_day"))
-        )
-        spark_df = spark_df.withColumn("arrival", to_timestamp(col("arrival")))
-        spark_df = spark_df.withColumn("departure", to_timestamp(col("departure")))
-        spark_df = spark_df.withColumn("vehicle_seats", col("vehicle_seats").cast("double"))
-        spark_df = spark_df.withColumn("passengers", col("passengers").cast("double"))
-        spark_df = spark_df.fillna(
-            {"vehicle_seats": settings.default_vehicle_capacity, "passengers": 0}
-        )
-        spark_df = spark_df.filter(col("vehicle_seats") > 0).filter(col("passengers") >= 0)
-
-        result = spark_df.toPandas()
-        spark.stop()
-        logger.info("Spark preprocessing completed. rows=%s", len(result))
-        return result.reset_index(drop=True)
+        finally:
+            if spark is not None:
+                try:
+                    spark.stop()
+                except Exception as exc:
+                    logger.warning("Spark stop failed. error=%s", exc)

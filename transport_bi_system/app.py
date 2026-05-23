@@ -310,7 +310,11 @@ def main() -> None:
         help="Mendukung file .csv dan .parquet",
     )
     use_sample = st.sidebar.toggle("Gunakan sample data demo", value=uploaded_file is None)
-    use_spark = st.sidebar.toggle("Preprocessing dengan PySpark", value=False)
+    use_spark = st.sidebar.toggle(
+        "Preprocessing dengan PySpark",
+        value=False,
+        help="Jika Spark/Java bermasalah di laptop atau deployment, matikan toggle ini. Aplikasi tetap berjalan dengan Pandas.",
+    )
     algorithm = st.sidebar.selectbox(
         "Algoritma ML",
         ["random_forest", "linear_regression"],
