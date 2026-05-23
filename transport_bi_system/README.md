@@ -131,6 +131,12 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+Jika menjalankan dari root repository:
+
+```bash
+streamlit run transport_bi_system/app.py
+```
+
 5. Login admin default:
 
 ```text
@@ -139,6 +145,16 @@ password: admin123
 ```
 
 Ubah kredensial di file `.env` sebelum demo produksi.
+
+## Deployment
+
+Untuk Streamlit Community Cloud, gunakan:
+
+```text
+Main file path: transport_bi_system/app.py
+```
+
+Jangan pilih file di folder `pages/` sebagai entry point. Panduan lengkap ada di `DEPLOYMENT.md`.
 
 ## Cara Menggunakan Dataset Kaggle
 
