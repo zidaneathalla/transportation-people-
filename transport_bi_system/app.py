@@ -86,23 +86,17 @@ def read_uploaded_dataset(uploaded_file) -> pd.DataFrame:
 
 
 def render_page_header(raw_rows: int | None = None, source: str = "Demo") -> None:
-    row_text = f"{raw_rows:,} rows" if raw_rows is not None else "No data"
+    row_text = f"{raw_rows:,} baris" if raw_rows is not None else "Belum ada data"
     st.markdown(
-        f"""
-        <div class="topbar">
-            <div>
-                <div class="eyebrow">Transport Operations Intelligence</div>
-                <h1>Sistem Rekomendasi Peluncuran Armada Harian</h1>
-                <p>Analisis demand, rute padat, jam puncak, prediksi penumpang, dan rekomendasi armada dalam satu cockpit BI.</p>
-            </div>
-            <div class="topbar-status">
-                <span>{source}</span>
-                <strong>{row_text}</strong>
-            </div>
+        """
+        <div class="page-header">
+            <div class="eyebrow">Transport Operations Intelligence</div>
+            <h1>Sistem Rekomendasi Peluncuran Armada Harian</h1>
         </div>
         """,
         unsafe_allow_html=True,
     )
+    st.caption(f"Sumber: **{source}** · {row_text}")
 
 
 def authenticate() -> bool:
@@ -129,18 +123,8 @@ def authenticate() -> bool:
             )
 
         with action_col:
-            st.markdown(
-                """
-                <div class="auth-card">
-                    <div class="auth-card-header"></div>
-                    <div class="auth-card-content">
-                        <h2>Mulai Analisis</h2>
-                        <p>Buka cockpit BI untuk mengelola dataset, prediksi penumpang, dan rekomendasi armada.</p>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.subheader("Mulai Analisis")
+            st.write("Buka dashboard untuk mengelola dataset, prediksi penumpang, dan rekomendasi armada.")
             if st.button("Get Started", use_container_width=True, key="get_started"):
                 st.session_state.show_login = True
                 st.rerun()
@@ -162,18 +146,8 @@ def authenticate() -> bool:
 
     login = False
     with form_col:
-        st.markdown(
-            """
-            <div class="auth-card">
-                <div class="auth-card-header"></div>
-                <div class="auth-card-content">
-                    <h2>Login Dashboard</h2>
-                    <p>Masukkan kredensial admin untuk melanjutkan.</p>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.subheader("Login Dashboard")
+        st.caption("Masukkan kredensial admin untuk melanjutkan.")
         username = st.text_input("Username", key="username_input")
         password = st.text_input("Password", type="password", key="password_input")
         col_a, col_b = st.columns(2)
@@ -215,26 +189,15 @@ def build_dataset(raw_df: pd.DataFrame, use_spark: bool) -> pd.DataFrame:
 
 
 def render_kpi_cards(kpis: dict) -> None:
-    metrics = [
-        ("Total Penumpang", f"{kpis['total_passengers']:,}", "Demand historis"),
-        ("Total Rute", f"{kpis['total_routes']:,}", "Rute unik"),
-        ("Occupancy Avg", f"{kpis['avg_occupancy']:.1f}%", "Utilisasi kursi"),
-        ("Jam Puncak", kpis["peak_hour"], "Peak hour"),
-        ("Biaya Operasional", rupiah(kpis["operational_cost"]), "Estimasi total"),
-    ]
-    columns = st.columns(5)
-    for column, (label, value, caption) in zip(columns, metrics):
-        with column:
-            st.markdown(
-                f"""
-                <div class="metric-card">
-                    <span>{caption}</span>
-                    <h3>{value}</h3>
-                    <p>{label}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Total Penumpang", f"{kpis['total_passengers']:,}")
+    with col2:
+        st.metric("Occupancy Rata-rata", f"{kpis['avg_occupancy']:.1f}%")
+    with col3:
+        st.metric("Jam Puncak", kpis["peak_hour"])
+    with col4:
+        st.metric("Biaya Operasional", rupiah(kpis["operational_cost"]))
 
 
 def style_figure(fig: go.Figure, height: int = 360) -> go.Figure:
@@ -349,7 +312,8 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
         fig = style_figure(fig, 400)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown('<div class="section-title"><h2>Tabel Rekomendasi Armada Harian</h2><span>Hasil kalkulasi: ceil(prediksi / kapasitas)</span></div>', unsafe_allow_html=True)
+    st.markdown("### Tabel Rekomendasi Armada Harian")
+    st.caption("Hasil kalkulasi: ceil(prediksi / kapasitas)")
     st.dataframe(
         recommendation[
             [
@@ -367,7 +331,8 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
         hide_index=True,
     )
 
-    st.markdown('<div class="section-title"><h2>Klasifikasi Prioritas Rute</h2><span>Berdasarkan occupancy rate dan demand</span></div>', unsafe_allow_html=True)
+    st.markdown("### Klasifikasi Prioritas Rute")
+    st.caption("Berdasarkan occupancy rate dan demand")
     priority_df = (
         recommendation.groupby("prioritas_rute", as_index=False)
         .agg(total_armada=("jumlah_armada", "sum"), total_prediksi=("prediksi_penumpang", "sum"))
@@ -437,18 +402,16 @@ def main() -> None:
 
         validator = DataValidator()
         validation = validator.validate(raw_df)
-        validation_state = "Valid" if validation.is_valid else "Needs Fix"
-        st.markdown(
-            f"""
-            <div class="validation-strip">
-                <div><span>Status Dataset</span><strong>{validation_state}</strong></div>
-                <div><span>Rows</span><strong>{len(validation.dataframe):,}</strong></div>
-                <div><span>Columns</span><strong>{len(validation.dataframe.columns):,}</strong></div>
-                <div><span>Missing Required</span><strong>{len(validation.missing_columns)}</strong></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        if validation.is_valid:
+            st.success(
+                f"Dataset valid · {len(validation.dataframe):,} baris · "
+                f"{len(validation.dataframe.columns)} kolom"
+            )
+        else:
+            st.error(
+                f"Dataset belum valid · kolom kurang: {', '.join(validation.missing_columns)}"
+            )
+
         with st.expander("Detail Validasi Dataset", expanded=not validation.is_valid):
             st.json(
                 {
@@ -485,16 +448,10 @@ def main() -> None:
         kpis = analytics.kpis(df)
 
         if model_result:
-            st.markdown(
-                f"""
-                <div class="model-banner">
-                    <strong>{model_result.model_name}</strong>
-                    <span>MAE {model_result.mae:.2f}</span>
-                    <span>R2 {model_result.r2:.2f}</span>
-                    <span>{model_result.rows:,} training rows</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
+            st.caption(
+                f"Model: **{model_result.model_name}** · "
+                f"MAE {model_result.mae:.2f} · R² {model_result.r2:.2f} · "
+                f"{model_result.rows:,} baris training"
             )
 
         tabs = st.tabs(["Dashboard BI", "Business Dataset", "Prediksi", "Laporan"])
@@ -502,7 +459,8 @@ def main() -> None:
             render_dashboard(df, recommendation, kpis)
 
         with tabs[1]:
-            st.markdown('<div class="section-title"><h2>Business Dataset Hasil Transformasi</h2><span>Dataset setelah feature engineering dan preprocessing</span></div>', unsafe_allow_html=True)
+            st.markdown("### Business Dataset Hasil Transformasi")
+            st.caption("Dataset setelah feature engineering dan preprocessing")
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.download_button(
                 "📥 Download Business Dataset (CSV)",
@@ -513,7 +471,8 @@ def main() -> None:
             )
 
         with tabs[2]:
-            st.markdown('<div class="section-title"><h2>Prediksi Jumlah Penumpang</h2><span>Hasil prediksi model ML dengan occupancy rate</span></div>', unsafe_allow_html=True)
+            st.markdown("### Prediksi Jumlah Penumpang")
+            st.caption("Hasil prediksi model ML dengan occupancy rate")
             prediction_view = df[
                 [
                     "tanggal",
@@ -531,7 +490,8 @@ def main() -> None:
             st.dataframe(prediction_view, use_container_width=True, hide_index=True)
 
         with tabs[3]:
-            st.markdown('<div class="section-title"><h2>Laporan Rekomendasi Harian</h2><span>Export dan ringkasan operasional</span></div>', unsafe_allow_html=True)
+            st.markdown("### Laporan Rekomendasi Harian")
+            st.caption("Export dan ringkasan operasional")
             report = ReportService()
             summary = report.daily_summary_text(recommendation)
             st.text_area("Ringkasan Rekomendasi Harian", summary, height=200, disabled=True)

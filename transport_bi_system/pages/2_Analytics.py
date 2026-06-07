@@ -22,15 +22,16 @@ css_path = ROOT_DIR / "assets" / "styles.css"
 if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
-st.markdown("""
-    <div class="topbar">
-        <div>
-            <div class="eyebrow">Advanced Analytics</div>
-            <h1>Transportation Insights & Trends</h1>
-            <p>Analisis mendalam tentang pola penumpang, performa rute, dan efisiensi operasional armada.</p>
-        </div>
+st.markdown(
+    """
+    <div class="page-header">
+        <div class="eyebrow">Advanced Analytics</div>
+        <h1>Transportation Insights & Trends</h1>
     </div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
+st.caption("Analisis mendalam tentang pola penumpang, performa rute, dan efisiensi operasional.")
 
 # Check if data exists
 data_path = settings.processed_data_dir / "transport_business_dataset.csv"
@@ -70,7 +71,7 @@ def style_figure(fig, height=360):
 tab1, tab2, tab3 = st.tabs(["Tren & Pola", "Performa Rute", "Operasional"])
 
 with tab1:
-    st.markdown('<div class="section-title"><h2>Tren Penumpang & Demand</h2></div>', unsafe_allow_html=True)
+    st.markdown("### Tren Penumpang & Demand")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -100,7 +101,7 @@ with tab1:
         st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    st.markdown('<div class="section-title"><h2>Performa & Kapasitas Rute</h2></div>', unsafe_allow_html=True)
+    st.markdown("### Performa & Kapasitas Rute")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -138,7 +139,7 @@ with tab2:
         st.plotly_chart(fig, use_container_width=True)
 
 with tab3:
-    st.markdown('<div class="section-title"><h2>Analisis Operasional</h2></div>', unsafe_allow_html=True)
+    st.markdown("### Analisis Operasional")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -175,7 +176,7 @@ with tab3:
         st.plotly_chart(fig, use_container_width=True)
 
 # Data Export
-st.markdown('<div class="section-title"><h2>📥 Data Export</h2></div>', unsafe_allow_html=True)
+st.markdown("### Data Export")
 col1, col2 = st.columns(2)
 
 with col1:
