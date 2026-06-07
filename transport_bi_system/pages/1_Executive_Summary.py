@@ -1,5 +1,5 @@
 """
-📋 Executive Summary - Ringkasan umum Transport BI System
+Executive Summary - Ringkasan umum Transport BI System
 """
 from pathlib import Path
 import sys
@@ -20,7 +20,7 @@ if css_path.exists():
 st.markdown("""
     <div class="topbar">
         <div>
-            <div class="eyebrow">📋 Executive Summary</div>
+            <div class="eyebrow">Executive Summary</div>
             <h1>Transport BI System Overview</h1>
             <p>Platform Business Intelligence untuk optimalisasi armada transportasi publik dan peningkatan efisiensi operasional.</p>
         </div>
@@ -28,7 +28,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
-### ℹ️ Informasi Penting
+### Informasi Penting
 
 Halaman ini adalah overview dari Transport BI System. Untuk menggunakan aplikasi, silakan:
 """)
@@ -38,38 +38,45 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("""
-    #### 🚀 Main Dashboard
-    Akses dashboard utama dengan analytics lengkap dan recommendations.
-    
-    - Pilih **"app.py"** atau jalankan:
-    ```bash
-    streamlit run transport_bi_system/app.py
-    ```
-    """)
+    <div class="quick-link-card">
+        <h4>Main Dashboard</h4>
+        <p>Akses dashboard utama dengan analytics lengkap dan recommendations.</p>
+        <ul>
+            <li>Pilih <strong>app.py</strong> atau jalankan:</li>
+        </ul>
+        <span class="command-pill">streamlit run transport_bi_system/app.py</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
     st.markdown("""
-    #### 📊 Advanced Analytics
-    Halaman analitik mendalam dengan visualisasi detail.
-    
-    - Pilih tab **"Analytics"** di sidebar
-    - Lihat trend, performa rute, dan analisis operasional
-    """)
+    <div class="quick-link-card">
+        <h4>Advanced Analytics</h4>
+        <p>Halaman analitik mendalam dengan visualisasi detail.</p>
+        <ul>
+            <li>Pilih tab <strong>Analytics</strong> di sidebar</li>
+            <li>Lihat trend, performa rute, dan analisis operasional</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col3:
     st.markdown("""
-    #### ⚙️ Settings & Docs
-    Konfigurasi sistem dan dokumentasi lengkap.
-    
-    - Pilih tab **"Settings"** di sidebar
-    - Baca panduan penggunaan dan API documentation
-    """)
+    <div class="quick-link-card">
+        <h4>Settings & Docs</h4>
+        <p>Konfigurasi sistem dan dokumentasi lengkap.</p>
+        <ul>
+            <li>Pilih tab <strong>Settings</strong> di sidebar</li>
+            <li>Baca panduan penggunaan dan API documentation</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.divider()
 
 # System Overview
 st.markdown("""
-### 🎯 Tujuan Sistem
+### Tujuan Sistem
 
 Transport BI System dirancang untuk:
 1. **Analisis Data Real-time** - Monitoring demand penumpang dan performa rute
@@ -78,7 +85,7 @@ Transport BI System dirancang untuk:
 4. **Efisiensi Biaya** - Tracking cost per passenger dan optimalisasi rute
 5. **Decision Support** - Dashboard interaktif untuk decision making
 
-### 💡 Key Features
+### Key Features
 
 | Fitur | Deskripsi |
 |-------|-----------|
@@ -89,33 +96,62 @@ Transport BI System dirancang untuk:
 | **Data Export** | Export laporan ke Excel untuk presentasi |
 | **Multi-Algorithm Support** | Pilih algoritma ML yang sesuai kebutuhan |
 
-### 📈 Workflow Aplikasi
+### Workflow Aplikasi
+""")
 
-```
-1. Upload Dataset (CSV/Parquet)
-   ↓
-2. Validasi Data
-   ↓
-3. Preprocessing & Feature Engineering
-   ↓
-4. Train ML Model
-   ↓
-5. Generate Predictions
-   ↓
-6. Build Fleet Recommendations
-   ↓
-7. Visualize & Analyze
-   ↓
-8. Export Reports
-```
+st.markdown("""
+<div class="workflow-grid">
+    <div class="workflow-step">
+        <span>01</span>
+        <strong>Upload Dataset</strong>
+        <p>Masukkan file CSV atau Parquet sebagai sumber data operasional.</p>
+    </div>
+    <div class="workflow-step">
+        <span>02</span>
+        <strong>Validasi Data</strong>
+        <p>Sistem memeriksa kelengkapan kolom dan kualitas dataset.</p>
+    </div>
+    <div class="workflow-step">
+        <span>03</span>
+        <strong>Preprocessing</strong>
+        <p>Data dibersihkan, dinormalisasi, dan diperkaya dengan fitur analitik.</p>
+    </div>
+    <div class="workflow-step">
+        <span>04</span>
+        <strong>Train ML Model</strong>
+        <p>Model dilatih untuk membaca pola demand dan performa rute.</p>
+    </div>
+    <div class="workflow-step">
+        <span>05</span>
+        <strong>Generate Predictions</strong>
+        <p>Prediksi penumpang dibuat untuk mendukung keputusan operasional.</p>
+    </div>
+    <div class="workflow-step">
+        <span>06</span>
+        <strong>Fleet Recommendations</strong>
+        <p>Sistem menghitung kebutuhan armada berdasarkan demand dan kapasitas.</p>
+    </div>
+    <div class="workflow-step">
+        <span>07</span>
+        <strong>Visualize & Analyze</strong>
+        <p>Insight ditampilkan lewat KPI, grafik, tabel, dan prioritas rute.</p>
+    </div>
+    <div class="workflow-step">
+        <span>08</span>
+        <strong>Export Reports</strong>
+        <p>Laporan dapat diekspor untuk evaluasi dan presentasi harian.</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-### 🔒 Security & Access
+st.markdown("""
+### Security & Access
 
 - **Authentication** - Username & password admin (default: admin/admin123)
 - **Data Privacy** - Semua data tersimpan lokal
 - **Session Management** - Auto-logout untuk keamanan
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 - **Frontend**: Streamlit 1.35.0
 - **Data Processing**: Pandas 2.2.2, PySpark 3.5.1
@@ -125,5 +161,5 @@ Transport BI System dirancang untuk:
 
 ---
 
-**📌 Catatan:** Halaman `pages/` hanya untuk informasi. Main entry point adalah `transport_bi_system/app.py`
+**Catatan:** Halaman `pages/` hanya untuk informasi. Main entry point adalah `transport_bi_system/app.py`
 """)

@@ -1,5 +1,5 @@
 """
-⚙️ Settings & Documentation Page
+Settings & Documentation Page
 """
 import streamlit as st
 from pathlib import Path
@@ -21,14 +21,14 @@ if css_path.exists():
 st.markdown("""
     <div class="topbar">
         <div>
-            <div class="eyebrow">⚙️ System Settings</div>
+            <div class="eyebrow">System Settings</div>
             <h1>Configuration & Documentation</h1>
             <p>Pengaturan aplikasi, dokumentasi teknis, dan panduan penggunaan Transport BI System.</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["🔧 Configuration", "📖 Documentation", "ℹ️ About"])
+tab1, tab2, tab3 = st.tabs(["Configuration", "Documentation", "About"])
 
 with tab1:
     st.markdown('<div class="section-title"><h2>Konfigurasi Aplikasi</h2></div>', unsafe_allow_html=True)
@@ -43,7 +43,7 @@ with tab1:
         st.markdown('<div class="metric-card"><span>Database</span><h3>CSV</h3><p>Local file storage</p></div>', unsafe_allow_html=True)
         st.markdown('<div class="metric-card"><span>ML Engine</span><h3>Scikit-learn</h3><p>Random Forest & Linear Regression</p></div>', unsafe_allow_html=True)
     
-    with st.expander("🔐 API Configuration", expanded=False):
+    with st.expander("API Configuration", expanded=False):
         st.write("""
         ### API Endpoints
         - **Analytics**: `/api/analytics/*`
@@ -120,7 +120,7 @@ with tab3:
     st.markdown('<div class="section-title"><h2>Tentang Transport BI System</h2></div>', unsafe_allow_html=True)
     
     st.markdown("""
-    ### 🎯 Misi
+    ### Misi
     Menyediakan platform Business Intelligence terintegrasi untuk optimalisasi armada transportasi publik dan 
     efisiensi operasional rute berbasis data dan machine learning.
     
@@ -132,12 +132,12 @@ with tab3:
     - **Visualization**: Plotly & Matplotlib
     
     ### 📋 Key Features
-    - ✅ Real-time analytics dashboard
-    - ✅ ML-powered passenger predictions
-    - ✅ Automated fleet recommendations
-    - ✅ Route optimization analysis
-    - ✅ Cost efficiency tracking
-    - ✅ Interactive data exploration
+    - Real-time analytics dashboard
+    - ML-powered passenger predictions
+    - Automated fleet recommendations
+    - Route optimization analysis
+    - Cost efficiency tracking
+    - Interactive data exploration
     
     ### 👥 Support
     - 📧 Email: support@transportbi.local

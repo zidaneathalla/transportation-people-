@@ -30,7 +30,7 @@ logger = get_logger(__name__)
 
 st.set_page_config(
     page_title=settings.app_name,
-    page_icon="🚍",
+    page_icon="T",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -109,19 +109,82 @@ def authenticate() -> bool:
     if st.session_state.get("authenticated"):
         return True
 
-    st.markdown(
-        """
-        <div class="login-shell">
-            <div class="login-badge">BI Command Center</div>
-            <h1>Transport BI System</h1>
-            <p>Masuk ke dashboard operasional armada dan demand penumpang.</p>
-        """,
-        unsafe_allow_html=True,
-    )
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    login = st.button("Login", use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Initialize session state for showing login form
+    if "show_login" not in st.session_state:
+        st.session_state.show_login = False
+
+    # Landing page - show before Get Started is clicked
+    if not st.session_state.show_login:
+        intro_col, action_col = st.columns([1.25, 0.75], gap="large")
+        with intro_col:
+            st.markdown(
+                """
+                <div class="landing-page landing-page-split">
+                    <div class="eyebrow">Transport Operations Intelligence</div>
+                    <h1 class="landing-title">Transport BI System</h1>
+                    <p class="landing-subtitle">Masuk ke dashboard operasional armada dan demand penumpang.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with action_col:
+            st.markdown(
+                """
+                <div class="auth-card">
+                    <div class="auth-card-header"></div>
+                    <div class="auth-card-content">
+                        <h2>Mulai Analisis</h2>
+                        <p>Buka cockpit BI untuk mengelola dataset, prediksi penumpang, dan rekomendasi armada.</p>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button("Get Started", use_container_width=True, key="get_started"):
+                st.session_state.show_login = True
+                st.rerun()
+        return False
+
+    # Login form - show after Get Started is clicked
+    intro_col, form_col = st.columns([1.25, 0.75], gap="large")
+    with intro_col:
+        st.markdown(
+            """
+            <div class="landing-page landing-page-split">
+                <div class="eyebrow">Secure Access</div>
+                <h1 class="landing-title">Transport BI System</h1>
+                <p class="landing-subtitle">Login untuk masuk ke dashboard operasional, analytics, dan rekomendasi armada harian.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    login = False
+    with form_col:
+        st.markdown(
+            """
+            <div class="auth-card">
+                <div class="auth-card-header"></div>
+                <div class="auth-card-content">
+                    <h2>Login Dashboard</h2>
+                    <p>Masukkan kredensial admin untuk melanjutkan.</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        username = st.text_input("Username", key="username_input")
+        password = st.text_input("Password", type="password", key="password_input")
+        col_a, col_b = st.columns(2)
+
+        with col_a:
+            login = st.button("Login", use_container_width=True, key="login_btn")
+
+        with col_b:
+            if st.button("Back", use_container_width=True, key="back_btn"):
+                st.session_state.show_login = False
+                st.rerun()
 
     if login:
         if username == settings.admin_username and password == settings.admin_password:
@@ -238,7 +301,7 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             x="tanggal",
             y="total_penumpang",
             markers=True,
-            title="📈 Tren Penumpang Harian",
+            title="Tren Penumpang Harian",
             color_discrete_sequence=[CHART_COLORS[0]],
         )
         fig.update_traces(
@@ -253,7 +316,7 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             peak_df.sort_values("jam"),
             x="jam",
             y="total_penumpang",
-            title="⏰ Distribusi Jam Sibuk",
+            title="Distribusi Jam Sibuk",
             color="rata_occupancy",
             color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[0], CHART_COLORS[4]],
         )
@@ -267,7 +330,7 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             x="total_penumpang",
             y="line_id",
             orientation="h",
-            title="🔥 Top 10 Rute Terpadat",
+            title="Top 10 Rute Terpadat",
             color="rata_occupancy",
             color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[3], CHART_COLORS[4]],
         )
@@ -279,14 +342,14 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             cost_df.head(10),
             x="line_id",
             y="total_biaya",
-            title="💰 Biaya Operasional per Rute",
+            title="Biaya Operasional per Rute",
             color="total_penumpang",
             color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[0]],
         )
         fig = style_figure(fig, 400)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown('<div class="section-title"><h2>📋 Tabel Rekomendasi Armada Harian</h2><span>Hasil kalkulasi: ceil(prediksi / kapasitas)</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title"><h2>Tabel Rekomendasi Armada Harian</h2><span>Hasil kalkulasi: ceil(prediksi / kapasitas)</span></div>', unsafe_allow_html=True)
     st.dataframe(
         recommendation[
             [
@@ -304,7 +367,7 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
         hide_index=True,
     )
 
-    st.markdown('<div class="section-title"><h2>🎯 Klasifikasi Prioritas Rute</h2><span>Berdasarkan occupancy rate dan demand</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title"><h2>Klasifikasi Prioritas Rute</h2><span>Berdasarkan occupancy rate dan demand</span></div>', unsafe_allow_html=True)
     priority_df = (
         recommendation.groupby("prioritas_rute", as_index=False)
         .agg(total_armada=("jumlah_armada", "sum"), total_prediksi=("prediksi_penumpang", "sum"))
@@ -471,11 +534,11 @@ def main() -> None:
             st.markdown('<div class="section-title"><h2>Laporan Rekomendasi Harian</h2><span>Export dan ringkasan operasional</span></div>', unsafe_allow_html=True)
             report = ReportService()
             summary = report.daily_summary_text(recommendation)
-            st.text_area("📄 Ringkasan Rekomendasi Harian", summary, height=200, disabled=True)
+            st.text_area("Ringkasan Rekomendasi Harian", summary, height=200, disabled=True)
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("📊 Export ke Excel", use_container_width=True):
+                if st.button("Export ke Excel", use_container_width=True):
                     path = report.export_excel(
                         recommendation,
                         kpis,
@@ -486,10 +549,10 @@ def main() -> None:
                             "Biaya Operasional": analytics.operational_cost(df),
                         },
                     )
-                    st.success(f"✅ Laporan berhasil dibuat: {path}")
+                    st.success(f"Laporan berhasil dibuat: {path}")
             
             with col2:
-                if st.button("📋 Copy Summary", use_container_width=True):
+                if st.button("Copy Summary", use_container_width=True):
                     st.info("Ringkasan tersalin ke clipboard (copy dari text area di atas)")
 
     except Exception as exc:

@@ -1,5 +1,5 @@
 """
-📊 Analytics Page - Detailed transportation analytics and insights
+Analytics Page - Detailed transportation analytics and insights
 """
 import streamlit as st
 import pandas as pd
@@ -25,7 +25,7 @@ if css_path.exists():
 st.markdown("""
     <div class="topbar">
         <div>
-            <div class="eyebrow">📊 Advanced Analytics</div>
+            <div class="eyebrow">Advanced Analytics</div>
             <h1>Transportation Insights & Trends</h1>
             <p>Analisis mendalam tentang pola penumpang, performa rute, dan efisiensi operasional armada.</p>
         </div>
@@ -35,7 +35,7 @@ st.markdown("""
 # Check if data exists
 data_path = settings.processed_data_dir / "transport_business_dataset.csv"
 if not data_path.exists():
-    st.info("📁 Belum ada data. Jalankan dashboard utama terlebih dahulu untuk memproses data.")
+    st.info("Belum ada data. Jalankan dashboard utama terlebih dahulu untuk memproses data.")
     st.stop()
 
 # Load data
@@ -67,7 +67,7 @@ def style_figure(fig, height=360):
     return fig
 
 # Main Analytics
-tab1, tab2, tab3 = st.tabs(["📈 Tren & Pola", "🏆 Performa Rute", "💼 Operasional"])
+tab1, tab2, tab3 = st.tabs(["Tren & Pola", "Performa Rute", "Operasional"])
 
 with tab1:
     st.markdown('<div class="section-title"><h2>Tren Penumpang & Demand</h2></div>', unsafe_allow_html=True)
@@ -92,7 +92,7 @@ with tab1:
             peak_df.sort_values("jam"),
             x="jam",
             y="total_penumpang",
-            title="⏰ Distribusi Penumpang per Jam",
+            title="Distribusi Penumpang per Jam",
             color="rata_occupancy",
             color_continuous_scale=[COLORS[2], COLORS[0], COLORS[4]],
         )
@@ -110,7 +110,7 @@ with tab2:
             x="total_penumpang",
             y="line_id",
             orientation="h",
-            title="🔥 Top 12 Rute (Total Penumpang)",
+            title="Top 12 Rute (Total Penumpang)",
             color="rata_occupancy",
             color_continuous_scale=[COLORS[2], COLORS[3], COLORS[4]],
         )
@@ -129,7 +129,7 @@ with tab2:
             route_stats,
             x="line_id",
             y="occupancy_rate",
-            title="📊 Rata-rata Occupancy Rate per Rute",
+            title="Rata-rata Occupancy Rate per Rute",
             color="occupancy_rate",
             color_continuous_scale=[COLORS[2], COLORS[0]],
         )
@@ -147,7 +147,7 @@ with tab3:
             cost_df.head(10),
             x="line_id",
             y="total_biaya",
-            title="💰 Biaya Operasional Top 10 Rute",
+            title="Biaya Operasional Top 10 Rute",
             color="total_penumpang",
             color_continuous_scale=[COLORS[2], COLORS[0]],
         )
@@ -168,7 +168,7 @@ with tab3:
             size="passengers",
             color="cost_per_passenger",
             hover_data={"line_id": True},
-            title="📉 Cost Efficiency Analysis",
+            title="Cost Efficiency Analysis",
             color_continuous_scale=[COLORS[2], COLORS[4]],
         )
         fig = style_figure(fig, 400)
@@ -179,7 +179,7 @@ st.markdown('<div class="section-title"><h2>📥 Data Export</h2></div>', unsafe
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("📊 Download Analytics Report", use_container_width=True):
+    if st.button("Download Analytics Report", use_container_width=True):
         analytics_data = {
             "Busiest Routes": analytics.busiest_routes(df).to_csv(index=False),
             "Peak Hours": analytics.peak_hours(df).to_csv(index=False),
