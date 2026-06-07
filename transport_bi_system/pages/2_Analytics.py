@@ -80,7 +80,7 @@ with tab1:
             trend_df,
             x="tanggal",
             y="total_penumpang",
-            title="📅 Tren Penumpang Harian",
+            title="Tren Penumpang Harian",
             color_discrete_sequence=[COLORS[0]],
         )
         fig.update_traces(fill="tozeroy", fillcolor="rgba(255, 56, 92, 0.1)")
@@ -189,5 +189,5 @@ with col1:
         st.success("✅ Data siap didownload")
 
 with col2:
-    if st.button("📋 Copy Summary Statistics", use_container_width=True):
+    if st.button("Copy Summary Statistics", use_container_width=True):
         st.info("📌 Salin statistik dari charts di atas")
