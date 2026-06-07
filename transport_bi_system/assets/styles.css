@@ -24,6 +24,10 @@
     --font-family: 'Inter', -apple-system, system-ui, sans-serif;
     --font-heading: 'Manrope', -apple-system, system-ui, sans-serif;
     
+    /* Streamlit overrides for canvas/glide-data-grid */
+    --style-font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+    --style-text-color: #000000 !important;
+    
     /* Spacing */
     --space-xxs: 2px;
     --space-xs: 4px;
@@ -62,9 +66,10 @@ section[data-testid="stSidebar"] * {
     color: var(--ink);
 }
 
-section[data-testid="stSidebar"] div[data-testid="stFileUploaderDropzone"] {
-    background: var(--surface-soft);
-    border: 1px dashed var(--hairline);
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"],
+section[data-testid="stSidebar"] [data-testid="stFileUploadDropzone"] {
+    background: #fff9fb;
+    border: 1px dashed var(--primary);
     border-radius: var(--rounded-md);
 }
 
@@ -109,16 +114,13 @@ section[data-testid="stSidebar"] button {
 .landing-page {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
-    min-height: 50vh;
-    padding: var(--space-section);
     background: var(--canvas);
 }
 
 .landing-page-split {
-    min-height: 62vh;
-    padding: var(--space-section) var(--space-xl);
+    padding: var(--space-base) var(--space-xl);
 }
 
 .landing-title {
@@ -212,6 +214,26 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
 div[data-testid="stVerticalBlockBorderWrapper"]:before {
     display: none;
 }
+
+/* Remove card container styling on landing page columns containing .landing-page */
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.landing-page) {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Remove card container styling on columns containing buttons to prevent buttons from being wrapped in cards */
+div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stButton"]) {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+
 
 .login-shell h1 {
     margin: 0 0 var(--space-sm) 0;
@@ -324,11 +346,12 @@ h1, h2, h3 {
     box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
     position: relative;
     overflow: hidden;
-    transition: box-shadow 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .metric-card:hover {
-    box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 4px 8px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+    transform: translateY(-4px) !important;
+    box-shadow: rgba(0, 0, 0, 0.06) 0 16px 32px, rgba(0, 0, 0, 0.04) 0 4px 12px !important;
 }
 
 .metric-card:before {
@@ -451,8 +474,7 @@ div[data-testid="stPlotlyChart"] {
 
 .stTabs [data-baseweb="tab"] {
     background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
+    border: none !important;
     border-radius: 0;
     padding: var(--space-base) var(--space-lg);
     color: var(--muted);
@@ -461,8 +483,7 @@ div[data-testid="stPlotlyChart"] {
 }
 
 .stTabs [aria-selected="true"] {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
+    color: var(--primary) !important;
 }
 
 div[data-testid="stDataFrame"] {
@@ -614,34 +635,70 @@ div[data-testid="stDownloadButton"] > button:disabled * {
     color: var(--ink) !important;
 }
 
-div[data-testid="stFileUploaderDropzone"] {
-    background: var(--canvas) !important;
+[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploadDropzone"] {
+    background: #fff9fb !important;
     border: 1px dashed var(--primary) !important;
     border-radius: var(--rounded-md) !important;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-div[data-testid="stFileUploaderDropzone"] *,
-div[data-testid="stFileUploaderDropzone"] label,
-div[data-testid="stFileUploaderDropzone"] small,
-div[data-testid="stFileUploaderDropzone"] span,
-div[data-testid="stFileUploaderDropzone"] p {
+[data-testid="stFileUploaderDropzone"]:hover,
+[data-testid="stFileUploadDropzone"]:hover {
+    background: #ffe6ec !important;
+    border-color: var(--primary-active) !important;
+}
+
+div[data-testid="stUploadedFile"] {
+    background-color: #fff9fb !important;
+    border: 1px solid #ffd1da !important;
+    border-radius: var(--rounded-sm) !important;
+    margin-top: var(--space-xs) !important;
+}
+
+div[data-testid="stUploadedFile"] * {
     color: var(--ink) !important;
 }
 
-div[data-testid="stFileUploaderDropzone"] button {
+[data-testid="stFileUploaderDropzone"] *,
+[data-testid="stFileUploaderDropzone"] label,
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] p,
+[data-testid="stFileUploadDropzone"] *,
+[data-testid="stFileUploadDropzone"] label,
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] span,
+[data-testid="stFileUploadDropzone"] p {
+    color: var(--ink) !important;
+}
+
+/* Style the Browse files button in the uploader */
+div[data-testid="stFileUploader"] button,
+div[data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stFileUploadDropzone"] button {
     background: var(--primary) !important;
     border: 1px solid var(--primary) !important;
     border-radius: var(--rounded-sm) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
+    padding: 8px 16px !important;
+    height: auto !important;
 }
 
-div[data-testid="stFileUploaderDropzone"] button:hover {
+div[data-testid="stFileUploader"] button:hover,
+div[data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
+[data-testid="stFileUploaderDropzone"] button:hover,
+[data-testid="stFileUploadDropzone"] button:hover {
     background: var(--primary-active) !important;
     border-color: var(--primary-active) !important;
 }
 
-div[data-testid="stFileUploaderDropzone"] button * {
+div[data-testid="stFileUploader"] button *,
+div[data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] *,
+[data-testid="stFileUploaderDropzone"] button *,
+[data-testid="stFileUploadDropzone"] button * {
     color: #ffffff !important;
 }
 
@@ -692,8 +749,12 @@ li[role="option"] {
 
 div[data-baseweb="menu"] [role="option"]:hover,
 div[data-baseweb="popover"] [role="option"]:hover,
-li[role="option"]:hover {
+li[role="option"]:hover,
+div[data-baseweb="menu"] [role="option"][aria-selected="true"],
+div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+li[role="option"][aria-selected="true"] {
     background: #ffe6ec !important;
+    color: var(--primary) !important;
 }
 
 pre,
@@ -711,6 +772,12 @@ div[data-testid="stCodeBlock"] * {
     border-radius: var(--rounded-md);
     background: var(--canvas);
     box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: rgba(0, 0, 0, 0.06) 0 16px 32px, rgba(0, 0, 0, 0.04) 0 4px 12px !important;
 }
 
 .quick-link-card h4 {
@@ -766,6 +833,12 @@ div[data-testid="stCodeBlock"] * {
     border-radius: var(--rounded-md);
     background: var(--canvas);
     box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.workflow-step:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: rgba(0, 0, 0, 0.06) 0 16px 32px, rgba(0, 0, 0, 0.04) 0 4px 12px !important;
 }
 
 .workflow-step:before {
@@ -880,4 +953,115 @@ div[data-testid="stCodeBlock"] * {
     .auth-card {
         margin-bottom: var(--space-base);
     }
+}
+
+/* --- Top Header & Logout Styles --- */
+header[data-testid="stHeader"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid var(--hairline-soft) !important;
+}
+
+header[data-testid="stHeader"] * {
+    color: var(--ink) !important;
+}
+
+.top-right-logout {
+    position: fixed;
+    top: 15px;
+    right: 150px;
+    z-index: 999999;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Shift left when running status widget is active (JS trigger or CSS fallback) */
+.top-right-logout.shifted,
+div.stApp:has([data-testid="stStatusWidget"]) .top-right-logout {
+    right: 300px;
+}
+
+
+
+.logout-btn-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    padding: 6px 14px !important;
+    border-radius: var(--rounded-sm) !important;
+    text-decoration: none !important;
+    border: 1px solid var(--primary) !important;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.logout-btn-custom:hover {
+    background-color: var(--primary-active) !important;
+    border-color: var(--primary-active) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 56, 92, 0.2) !important;
+}
+
+.logout-btn-custom:active {
+    transform: translateY(1px);
+}
+
+/* --- Force Legible Dark Text and Font Family on Tables & Data --- */
+.stTable td,
+.stTable th,
+[data-testid="stDataFrame"] *,
+[data-testid="stDataFrame"] div,
+[data-testid="stDataFrame"] span {
+    color: #000000 !important;
+    font-family: var(--font-family) !important;
+}
+
+/* --- Micro-Animations and Interaction Enhancements --- */
+@keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-header,
+.landing-page,
+.topbar,
+.validation-strip,
+.workflow-grid {
+    animation: fadeInSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Add staggered delay for child containers to look premium */
+.topbar { animation-delay: 0.05s; }
+.validation-strip { animation-delay: 0.1s; }
+
+/* Smooth scale feedback for standard buttons */
+div.stButton > button,
+div[data-testid="stDownloadButton"] > button {
+    transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease !important;
+}
+
+div.stButton > button:hover,
+div[data-testid="stDownloadButton"] > button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(255, 56, 92, 0.2) !important;
+}
+
+div.stButton > button:active,
+div[data-testid="stDownloadButton"] > button:active {
+    transform: scale(0.98);
+}
+
+/* Align landing page columns vertically to center and add top margin */
+div[data-testid="stHorizontalBlock"]:has(.landing-page) {
+    margin-top: 12vh !important;
+    align-items: center !important;
 }

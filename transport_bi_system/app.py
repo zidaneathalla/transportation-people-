@@ -352,9 +352,52 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
 
 
 def main() -> None:
+    # Handle logout query parameter
+    if "logout" in st.query_params:
+        st.session_state.clear()
+        st.query_params.clear()
+        st.rerun()
+
     load_css()
     if not authenticate():
         return
+
+    st.markdown(
+        """
+        <div class="top-right-logout">
+            <a href="/?logout=1" target="_self" class="logout-btn-custom">Logout</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Inject JavaScript to monitor status widget and shift the logout button when running
+    import streamlit.components.v1 as components
+    components.html(
+        """
+        <script>
+            const parentDoc = window.parent.document;
+            function checkStatusWidget() {
+                const logoutContainer = parentDoc.querySelector('.top-right-logout');
+                if (!logoutContainer) return;
+                
+                const statusWidget = parentDoc.querySelector('[data-testid="stStatusWidget"]');
+                const isRunning = statusWidget && (statusWidget.offsetHeight > 0 || statusWidget.offsetWidth > 0);
+                
+                if (isRunning) {
+                    logoutContainer.classList.add('shifted');
+                } else {
+                    logoutContainer.classList.remove('shifted');
+                }
+            }
+            // Check periodically
+            setInterval(checkStatusWidget, 100);
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
 
     st.sidebar.markdown(
         """
@@ -365,9 +408,6 @@ def main() -> None:
         """,
         unsafe_allow_html=True,
     )
-    if st.sidebar.button("Logout", use_container_width=True):
-        st.session_state.clear()
-        st.rerun()
 
     uploaded_file = st.sidebar.file_uploader(
         "Upload dataset Kaggle",
