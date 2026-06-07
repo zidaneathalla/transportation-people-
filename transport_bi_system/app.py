@@ -35,7 +35,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-CHART_COLORS = ["#2563eb", "#14b8a6", "#f59e0b", "#ef4444", "#7c3aed", "#0f766e"]
+# Airbnb Design System Colors
+CHART_COLORS = ["#ff385c", "#0f766e", "#14b8a6", "#f59e0b", "#ef4444", "#7c3aed"]
 
 
 def load_css() -> None:
@@ -174,18 +175,50 @@ def render_kpi_cards(kpis: dict) -> None:
 
 
 def style_figure(fig: go.Figure, height: int = 360) -> go.Figure:
+    """Apply Airbnb design system styling to Plotly figures"""
     fig.update_layout(
         height=height,
         template="plotly_white",
-        margin=dict(l=12, r=12, t=54, b=12),
+        margin=dict(l=16, r=16, t=48, b=16),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="#ffffff",
-        font=dict(color="#334155", family="Inter, Arial, sans-serif"),
-        title=dict(font=dict(size=17, color="#0f172a")),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        font=dict(
+            color="#222222",
+            family="'Airbnb Cereal VF', Circular, -apple-system, system-ui, Roboto, 'Helvetica Neue', sans-serif",
+            size=14,
+        ),
+        title=dict(
+            font=dict(
+                size=16,
+                color="#222222",
+                family="'Airbnb Cereal VF', Circular, -apple-system, system-ui, Roboto, 'Helvetica Neue', sans-serif",
+            ),
+            x=0.0,
+            xanchor="left",
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="rgba(255,255,255,0)",
+            bordercolor="rgba(0,0,0,0)",
+        ),
+        hovermode="x unified",
     )
-    fig.update_xaxes(showgrid=False, linecolor="#e2e8f0")
-    fig.update_yaxes(gridcolor="#edf2f7", linecolor="#e2e8f0")
+    fig.update_xaxes(
+        showgrid=False,
+        linecolor="#dddddd",
+        showline=True,
+        linewidth=1,
+    )
+    fig.update_yaxes(
+        gridcolor="#ebebeb",
+        linecolor="#dddddd",
+        showline=True,
+        linewidth=1,
+    )
     return fig
 
 
@@ -205,11 +238,14 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             x="tanggal",
             y="total_penumpang",
             markers=True,
-            title="Tren Penumpang Harian",
+            title="📈 Tren Penumpang Harian",
             color_discrete_sequence=[CHART_COLORS[0]],
         )
-        fig.update_traces(line=dict(width=3), marker=dict(size=7))
-        fig = style_figure(fig, 372)
+        fig.update_traces(
+            line=dict(width=3, color=CHART_COLORS[0]),
+            marker=dict(size=8, color=CHART_COLORS[0]),
+        )
+        fig = style_figure(fig, 380)
         st.plotly_chart(fig, use_container_width=True)
 
     with right:
@@ -217,11 +253,11 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             peak_df.sort_values("jam"),
             x="jam",
             y="total_penumpang",
-            title="Distribusi Jam Sibuk",
+            title="⏰ Distribusi Jam Sibuk",
             color="rata_occupancy",
-            color_continuous_scale=["#dbeafe", "#14b8a6", "#0f766e"],
+            color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[0], CHART_COLORS[4]],
         )
-        fig = style_figure(fig, 372)
+        fig = style_figure(fig, 380)
         st.plotly_chart(fig, use_container_width=True)
 
     c1, c2 = st.columns(2)
@@ -231,26 +267,26 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
             x="total_penumpang",
             y="line_id",
             orientation="h",
-            title="Top Rute Terpadat",
+            title="🔥 Top 10 Rute Terpadat",
             color="rata_occupancy",
-            color_continuous_scale=["#dbeafe", "#f59e0b", "#ef4444"],
+            color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[3], CHART_COLORS[4]],
         )
         fig.update_layout(yaxis={"categoryorder": "total ascending"})
-        fig = style_figure(fig, 388)
+        fig = style_figure(fig, 400)
         st.plotly_chart(fig, use_container_width=True)
     with c2:
         fig = px.bar(
             cost_df.head(10),
             x="line_id",
             y="total_biaya",
-            title="Grafik Biaya Operasional per Rute",
+            title="💰 Biaya Operasional per Rute",
             color="total_penumpang",
-            color_continuous_scale=["#ccfbf1", "#2563eb", "#0f172a"],
+            color_continuous_scale=[CHART_COLORS[2], CHART_COLORS[0]],
         )
-        fig = style_figure(fig, 388)
+        fig = style_figure(fig, 400)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown('<div class="section-title"><h2>Tabel Rekomendasi Armada Harian</h2><span>hasil kalkulasi ceil(prediksi / kapasitas)</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title"><h2>📋 Tabel Rekomendasi Armada Harian</h2><span>Hasil kalkulasi: ceil(prediksi / kapasitas)</span></div>', unsafe_allow_html=True)
     st.dataframe(
         recommendation[
             [
@@ -268,7 +304,7 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
         hide_index=True,
     )
 
-    st.markdown('<div class="section-title"><h2>Klasifikasi Prioritas Rute</h2><span>berdasarkan occupancy rate</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title"><h2>🎯 Klasifikasi Prioritas Rute</h2><span>Berdasarkan occupancy rate dan demand</span></div>', unsafe_allow_html=True)
     priority_df = (
         recommendation.groupby("prioritas_rute", as_index=False)
         .agg(total_armada=("jumlah_armada", "sum"), total_prediksi=("prediksi_penumpang", "sum"))
@@ -278,11 +314,12 @@ def render_dashboard(df: pd.DataFrame, recommendation: pd.DataFrame, kpis: dict)
         priority_df,
         values="total_armada",
         names="prioritas_rute",
-        hole=0.55,
+        hole=0.4,
         title="Komposisi Armada Berdasarkan Prioritas",
         color_discrete_sequence=CHART_COLORS,
     )
-    fig = style_figure(fig, 380)
+    fig = style_figure(fig, 420)
+    fig.update_traces(textposition="inside", textinfo="label+percent")
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -402,10 +439,10 @@ def main() -> None:
             render_dashboard(df, recommendation, kpis)
 
         with tabs[1]:
-            st.subheader("Business Dataset Hasil Transformasi")
+            st.markdown('<div class="section-title"><h2>Business Dataset Hasil Transformasi</h2><span>Dataset setelah feature engineering dan preprocessing</span></div>', unsafe_allow_html=True)
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.download_button(
-                "Download business dataset CSV",
+                "📥 Download Business Dataset (CSV)",
                 df.to_csv(index=False).encode("utf-8"),
                 "transport_business_dataset.csv",
                 "text/csv",
@@ -413,7 +450,7 @@ def main() -> None:
             )
 
         with tabs[2]:
-            st.subheader("Prediksi Jumlah Penumpang")
+            st.markdown('<div class="section-title"><h2>Prediksi Jumlah Penumpang</h2><span>Hasil prediksi model ML dengan occupancy rate</span></div>', unsafe_allow_html=True)
             prediction_view = df[
                 [
                     "tanggal",
@@ -431,26 +468,33 @@ def main() -> None:
             st.dataframe(prediction_view, use_container_width=True, hide_index=True)
 
         with tabs[3]:
+            st.markdown('<div class="section-title"><h2>Laporan Rekomendasi Harian</h2><span>Export dan ringkasan operasional</span></div>', unsafe_allow_html=True)
             report = ReportService()
             summary = report.daily_summary_text(recommendation)
-            st.text_area("Ringkasan Rekomendasi Harian", summary, height=180)
+            st.text_area("📄 Ringkasan Rekomendasi Harian", summary, height=200, disabled=True)
 
-            if st.button("Export laporan Excel", use_container_width=True):
-                path = report.export_excel(
-                    recommendation,
-                    kpis,
-                    {
-                        "Rute Terpadat": analytics.busiest_routes(df),
-                        "Jam Sibuk": analytics.peak_hours(df),
-                        "Tren Harian": analytics.passenger_trend(df),
-                        "Biaya Operasional": analytics.operational_cost(df),
-                    },
-                )
-                st.success(f"Laporan berhasil dibuat: {path}")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("📊 Export ke Excel", use_container_width=True):
+                    path = report.export_excel(
+                        recommendation,
+                        kpis,
+                        {
+                            "Rute Terpadat": analytics.busiest_routes(df),
+                            "Jam Sibuk": analytics.peak_hours(df),
+                            "Tren Harian": analytics.passenger_trend(df),
+                            "Biaya Operasional": analytics.operational_cost(df),
+                        },
+                    )
+                    st.success(f"✅ Laporan berhasil dibuat: {path}")
+            
+            with col2:
+                if st.button("📋 Copy Summary", use_container_width=True):
+                    st.info("Ringkasan tersalin ke clipboard (copy dari text area di atas)")
 
     except Exception as exc:
         logger.exception("Application error")
-        st.error(f"Terjadi kesalahan: {exc}")
+        st.error(f"❌ Terjadi kesalahan: {exc}")
 
 
 if __name__ == "__main__":
